@@ -1,11 +1,11 @@
 import { useState } from 'react';
+import { Link } from 'expo-router';
 import { View, Text, Image, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { images } from '@/constants';
 import FormField from '@/components/FormField';
 import CustomButton from '@/components/CustomButton';
-import { Link } from 'expo-router';
 
 const SignIn = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);

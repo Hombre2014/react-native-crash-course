@@ -23,20 +23,14 @@ const TabIcon = ({ icon, color, name, focused }: TabLayoutProps) => {
         resizeMode="contain"
         className="w-6 h-6 mb-1"
       />
-      {/* <Text
-        style={{ color: color }}
-        className={`${focused ? 'font-psemibold' : 'font-pregular'} text-xs`}
-      >
-        {name}
-      </Text> */}
     </View>
   );
 };
 
 const TabLayout = () => {
-  // const { loading, isLogged } = useGlobalContext();
+  // const { isLoading, isLoggedIn } = useGlobalContext();
 
-  // if (!loading && !isLogged) return <Redirect href="/sign-in" />;
+  // if (!isLoading && !isLoggedIn) return <Redirect href="/sign-in" />;
 
   return (
     <>
@@ -117,7 +111,7 @@ const TabLayout = () => {
         />
       </Tabs>
 
-      {/* <Loader isLoading={loading} /> */}
+      {/* <Loader isLoading={isLoading} /> */}
       <StatusBar backgroundColor="#161622" style="light" />
     </>
   );

@@ -1,21 +1,41 @@
 import { useState } from 'react';
-import { Link } from 'expo-router';
-import { View, Text, Image, ScrollView } from 'react-native';
+import { Link, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, Image, ScrollView, Alert } from 'react-native';
 
 import { images } from '@/constants';
 import FormField from '@/components/FormField';
 import CustomButton from '@/components/CustomButton';
+import { getCurrentUser, signIn } from '@/lib/appwrite';
 
 const SignIn = () => {
+  // const { setUser, setIsLoggedIn } = useGlobalContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({
     email: '',
     password: '',
   });
 
-  const handleSubmit = () => {
-    console.log(form);
+  const handleSubmit = async () => {
+    if (!form.email || !form.password) {
+      Alert.alert('Error', 'Please fill in all fields');
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await signIn(form.email, form.password);
+      // If the user is not redirected once is logged in, use the following code
+      // const result = await getCurrentUser();
+      // setUser(result);
+      // setIsLoggedIn(true);
+
+      router.push('/home');
+    } catch (error) {
+      Alert.alert('Error', (error as Error).message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

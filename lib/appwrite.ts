@@ -1,4 +1,11 @@
-import { Account, Avatars, Client, Databases, ID } from 'react-native-appwrite';
+import {
+  Account,
+  Avatars,
+  Client,
+  Databases,
+  ID,
+  Query,
+} from 'react-native-appwrite';
 
 export const config = {
   platform: 'com.axebit.aora',
@@ -21,10 +28,14 @@ const account = new Account(client);
 const avatars = new Avatars(client);
 const databases = new Databases(client);
 
-export const SignIn = async (email: string, password: string) => {
+export const signIn = async (email: string, password: string) => {
   try {
-    const session = await account.createEmailPasswordSession(email, password);
+    const sessions = await account.listSessions();
+    if (sessions.total > 0) {
+      await account.deleteSession('current');
+    }
 
+    const session = await account.createEmailPasswordSession(email, password);
     return session;
   } catch (error) {
     console.error(error);
@@ -57,9 +68,7 @@ export const createUser = async ({
 
     const avatarUrl = avatars.getInitials(username);
 
-    await SignIn(email, password);
-
-    console.log('Database: ', databases.client);
+    await signIn(email, password);
 
     const newUser = await databases.createDocument(
       config.databaseId,
@@ -73,11 +82,34 @@ export const createUser = async ({
       }
     );
 
-    console.log('New user: ', newUser);
-
     return newUser;
   } catch (error) {
     console.error(error);
     throw new Error('Failed to create user');
+  }
+};
+
+export const getCurrentUser = async () => {
+  try {
+    const currentAccount = await account.get();
+
+    if (!currentAccount) {
+      throw new Error('No user account found');
+    }
+
+    const currentUser = await databases.listDocuments(
+      config.databaseId,
+      config.userCollectionId,
+      [Query.equal('accountId', currentAccount.$id)]
+    );
+
+    if (!currentUser) {
+      throw new Error('No user found');
+    }
+
+    return currentUser.documents[0];
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to get current user');
   }
 };

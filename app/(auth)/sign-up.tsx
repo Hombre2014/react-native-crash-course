@@ -4,11 +4,13 @@ import { View, Text, Image, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { images } from '@/constants';
+import { createUser } from '@/lib/appwrite';
 import FormField from '@/components/FormField';
 import CustomButton from '@/components/CustomButton';
-import { createUser } from '@/lib/appwrite';
+// import { useGlobalContext } from '@/context/GlobalProvider';
 
 const SignUp = () => {
+  // const { setUser, setIsLoggedIn } = useGlobalContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({
     email: '',
@@ -22,15 +24,15 @@ const SignUp = () => {
     }
 
     setIsSubmitting(true);
-
     try {
       const result = await createUser({
         email: form.email,
         password: form.password,
         username: form.username,
       });
-
-      // TODO: Handle result - set it to global state
+      // If the user is not redirected once is logged in, use the following code
+      // setUser(result);
+      // setIsLoggedIn(true);
 
       router.push('/home');
     } catch (error) {

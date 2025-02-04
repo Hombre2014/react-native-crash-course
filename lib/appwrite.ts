@@ -17,12 +17,19 @@ export const config = {
   videoCollectionId: '67a09894001bab2a5d1a',
 };
 
+const {
+  endpoint,
+  platform,
+  projectId,
+  storageId,
+  databaseId,
+  userCollectionId,
+  videoCollectionId,
+} = config;
+
 const client = new Client();
 
-client
-  .setEndpoint(config.endpoint)
-  .setProject(config.projectId)
-  .setPlatform(config.platform);
+client.setEndpoint(endpoint).setProject(projectId).setPlatform(platform);
 
 const account = new Account(client);
 const avatars = new Avatars(client);
@@ -71,8 +78,8 @@ export const createUser = async ({
     await signIn(email, password);
 
     const newUser = await databases.createDocument(
-      config.databaseId,
-      config.userCollectionId,
+      databaseId,
+      userCollectionId,
       ID.unique(),
       {
         email,
@@ -98,8 +105,8 @@ export const getCurrentUser = async () => {
     }
 
     const currentUser = await databases.listDocuments(
-      config.databaseId,
-      config.userCollectionId,
+      databaseId,
+      userCollectionId,
       [Query.equal('accountId', currentAccount.$id)]
     );
 
@@ -111,5 +118,30 @@ export const getCurrentUser = async () => {
   } catch (error) {
     console.error(error);
     throw new Error('Failed to get current user');
+  }
+};
+
+export const getAllPosts = async () => {
+  try {
+    const posts = await databases.listDocuments(databaseId, videoCollectionId);
+
+    return posts.documents;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to get all posts');
+  }
+};
+
+export const getLatestPosts = async () => {
+  try {
+    const posts = await databases.listDocuments(databaseId, videoCollectionId, [
+      Query.orderDesc('$createdAt'),
+      Query.limit(7),
+    ]);
+
+    return posts.documents;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to get all posts');
   }
 };
